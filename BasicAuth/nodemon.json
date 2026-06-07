@@ -1,0 +1,5 @@
+{
+  "exec": "node --env-file=.env server.js",
+  "watch": ["server.js", "config", "controllers", "models", "routes", "middleware"],
+  "ignore": ["client/**", "node_modules/**"]
+}

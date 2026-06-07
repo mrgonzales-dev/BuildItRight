@@ -1,0 +1,146 @@
+:root {
+  --primary: #4361ee;
+  --primary-hover: #3651d4;
+  --bg: #f0f2f5;
+  --card-bg: #ffffff;
+  --text: #212529;
+  --text-muted: #6c757d;
+  --border: #dee2e6;
+  --success: #2ec4b6;
+  --danger: #e63946;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+}
+
+.auth-card h3 {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.auth-card .subtitle {
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  font-size: 0.9rem;
+}
+
+.auth-card .form-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.auth-card .btn-primary {
+  background: var(--primary);
+  border: none;
+  padding: 0.6rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.auth-card .btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.auth-card .btn-primary:disabled {
+  background: #a0b0f0;
+}
+
+.auth-card .auth-link {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.auth-card .auth-link a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-card .auth-link a:hover {
+  text-decoration: underline;
+}
+
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.dashboard-card {
+  width: 100%;
+  max-width: 500px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.dashboard-card .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
+.dashboard-card h4 {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-card .email {
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-card .joined {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-card .btn-outline-danger {
+  border-radius: 8px;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+}

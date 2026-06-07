@@ -1,0 +1,25 @@
+{
+  "name": "crud-boilerplatemvcarchitecture",
+  "version": "1.0.0",
+  "description": "Basic TODO App with Express + SQLite backend and Vite + React frontend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "concurrently -n api,web -c blue,green \"nodemon\" \"npm run dev --prefix client\"",
+    "dev:api": "nodemon",
+    "dev:web": "npm run dev --prefix client",
+    "postinstall": "npm install --prefix client"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.0",
+    "nodemon": "^3.1.14"
+  }
+}
