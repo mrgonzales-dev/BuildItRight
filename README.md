@@ -31,14 +31,19 @@ You'll hear **MVC** thrown around a lot. It's short for **Model-View-Controller*
 
 **View** — what the user sees. In these projects, that's the React frontend. It calls the API, renders buttons and forms, and shows data. No database access, no business logic — just UI.
 
-The flow is always one direction: **View → Controller → Model → back up**.
+The flow is always one direction:
+
+1. **View** sends a **request** → **Controller**
+2. **Controller** asks **Model** for data
+3. **Model** queries the **Database**
+4. The **response** flows back the same path (Database → Model → Controller → View)
 
 ```mermaid
 flowchart LR
     V["View (React)"] -- "Request" --> C["Controller (logic)"]
     C --> M["Model (SQL)"]
     M --> D["Database (SQLite)"]
-    D -.-> M -.-> C -.-> V
+    D -. "Response" .-> M -.-> C -.-> V
 ```
 
 ### Why MVC?
