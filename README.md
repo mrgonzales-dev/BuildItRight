@@ -4,7 +4,10 @@
 
 # BuildItRight
 
+
+> [!NOTE]
 > A collection of ready-to-run project templates that teach you how real-world full-stack apps are structured — so you can skip the setup and get straight to building.
+> Every project in this repo uses **MVC Architecture** (Model-View-Controller) — the same pattern used by Rails, Django, Laravel, and countless production apps. It keeps code organized, predictable, and easy to modify. More on what that means below.
 
 Every project in this repo follows the same architecture, the same conventions, and the same philosophy. Pick the one closest to what you're building, and you're already halfway there.
 
@@ -19,6 +22,40 @@ This repo answers those questions — not with a theory lecture, but with workin
 Each project is a complete, zero-config full-stack app. Install. Run. See something working immediately. Then open the files and trace how it all fits together. The individual READMEs inside each project explain every layer — routes, controllers, models, database, frontend — in plain language.
 
 You know how to write code. I'll help you build the project around it.
+
+---
+
+## Wait — What Is MVC?
+
+You'll hear **MVC** thrown around a lot. It's short for **Model-View-Controller**, and it's just a way of splitting your code into three buckets so it doesn't turn into a tangled mess.
+
+**Model** — talks to the database. It handles saving, loading, querying, and any data logic. If it involves SQL, it lives here.
+
+**Controller** — the brain. It receives a request, asks the model for data, does some processing (check permissions, calculate totals, format things), then sends a response. No SQL, no HTML — just logic.
+
+**View** — what the user sees. In these projects, that's the React frontend. It calls the API, renders buttons and forms, and shows data. No database access, no business logic — just UI.
+
+The flow is always one direction: **View → Controller → Model → back up**.
+
+```
+                   Request
+    View  ──────────────────>  Controller  ──>  Model  ──>  Database
+    (React)                     (logic)         (SQL)       (SQLite)
+      ^                              │
+      │                              │
+      └──────────────────────────────┘
+                  JSON response
+```
+
+### Why MVC?
+
+Because it's predictable. When you open a project you've never seen before:
+
+- Need to change how data is saved? Look in **models/**.
+- Need to change what happens when someone visits a URL? Look in **controllers/**.
+- Need to change what a button does? Look in **client/src/pages/**.
+
+Every project here follows the exact same layout. Learn the pattern once, and you can walk into any of the seven projects and know exactly where to find things. That's the whole point — **spend your time learning, not hunting**.
 
 ---
 
