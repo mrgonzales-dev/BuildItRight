@@ -4,13 +4,10 @@
 
 # BuildItRight
 
+A collection of ready-to-run project templates that teach you how real-world full-stack apps are structured — so you can skip the setup and get straight to building.
 
 > [!NOTE]
-> A collection of ready-to-run project templates that teach you how real-world full-stack apps are structured — so you can skip the setup and get straight to building.
 > Every project in this repo uses **MVC Architecture** (Model-View-Controller) — the same pattern used by Rails, Django, Laravel, and countless production apps. It keeps code organized, predictable, and easy to modify. More on what that means below.
-
-Every project in this repo follows the same architecture, the same conventions, and the same philosophy. Pick the one closest to what you're building, and you're already halfway there.
-
 ---
 
 ## What This Is
