@@ -33,14 +33,12 @@ You'll hear **MVC** thrown around a lot. It's short for **Model-View-Controller*
 
 The flow is always one direction: **View → Controller → Model → back up**.
 
-```
-                   Request
-    View  ──────────────────>  Controller  ──>  Model  ──>  Database
-    (React)                     (logic)         (SQL)       (SQLite)
-      ^                              │
-      │                              │
-      └──────────────────────────────┘
-                  JSON response
+```mermaid
+flowchart LR
+    V["View (React)"] -- "Request" --> C["Controller (logic)"]
+    C --> M["Model (SQL)"]
+    M --> D["Database (SQLite)"]
+    D -.-> M -.-> C -.-> V
 ```
 
 ### Why MVC?
