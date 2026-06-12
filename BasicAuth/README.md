@@ -98,29 +98,27 @@ You fill out a form in the browser. The browser sends it to the backend. The bac
 
 ### Registration flow
 
-```
-Register Page         api.js           Express          authController      SQLite
-     │                   │                 │                   │               │
-     │ Submit form       │                 │                   │               │
-     │──────────────────>│                 │                   │               │
-     │                   │ POST /api/auth/ │                   │               │
-     │                   │   register      │                   │               │
-     │                   │ ───────────────>│                   │               │
-     │                   │                 │ ─────────────────>│               │
-     │                   │                 │                   │ Check email   │
-     │                   │                 │                   │ not taken →   │
-     │                   │                 │                   │ bcrypt hash   │
-     │                   │                 │                   │ password →    │
-     │                   │                 │                   │ INSERT user   │
-     │                   │                 │                   │ ─────────────>│
-     │                   │                 │                   │ <─────────────│
-     │                   │                 │                   │ Create JWT    │
-     │                   │                 │ <─────────────────│               │
-     │                   │ <───────────────│ { user, token }   │               │
-     │ <─────────────────│ { user, token } │                   │               │
-     │ Save token to     │                 │                   │               │
-     │ localStorage →    │                 │                   │               │
-     │ Show Dashboard    │                 │                   │               │
+```mermaid
+sequenceDiagram
+    participant RegisterPage as Register Page
+    participant api as api.js
+    participant Express as Express
+    participant authController as authController
+    participant SQLite as SQLite
+
+    RegisterPage->>api: Submit form
+    api->>Express: POST /api/auth/register
+    Express->>authController:
+    authController->>authController: Check email not taken
+    authController->>authController: bcrypt hash password
+    authController->>authController: INSERT user
+    authController->>SQLite: INSERT user
+    SQLite-->>authController:
+    authController->>authController: Create JWT
+    authController-->>Express: { user, token }
+    Express-->>api: { user, token }
+    api-->>RegisterPage: { user, token }
+    Note over RegisterPage: Save token to localStorage<br/>Show Dashboard
 ```
 
 1. You type your name, email, and password into the **Register** form.
@@ -252,7 +250,7 @@ curl http://localhost:3000/api/auth/me \
 
 ## Customization Guide
 
-### Add a "forgot password" field to the user profile
+### Add a "phone number" field to the user profile
 
 1. **Add a column to the database** — edit `config/db.js` and add a `phone` column to the users table:
    ```sql
@@ -293,7 +291,7 @@ curl http://localhost:3000/api/auth/me \
 | `EADDRINUSE: address already in use :::3000` | Another app is using port 3000 | Close the other process, or change `PORT` in `.env` to `3001` — also update `client/vite.config.js` proxy target |
 | `EADDRINUSE` on port 5173 | Another Vite app is running | Stop the other one, or Vite will auto-offer the next port |
 | `Cannot find module 'bcryptjs'` | Backend deps not installed | Run `npm install` in the project root |
-| `.env` changes not taking effect | You're using `npm start` instead of `npm run dev` | Use `npm run dev` — nodemon reads `.env`. `npm start` uses Node directly and may not load `.env`. |
+| `.env` changes not taking effect | `--env-file` is read at startup, not watched for changes | Stop the process (Ctrl+C) and restart it. Both `npm start` and `npm run dev` load `.env`, but `npm run dev` auto-restarts when files change. |
 | Back button after logout shows Dashboard briefly | Token cached in browser history | This is a known behavior with client-side routing. The app should redirect to login after checking the token. If it persists, clear localStorage manually. |
 | "Token expired" after a few days | JWT defaults to 7-day expiry | That's expected! Log in again to get a fresh token. You can change the expiry in `authController.js` (see customization guide). |
 | `Cannot find module 'react'` | Frontend deps not installed | Run `npm install --prefix client` |

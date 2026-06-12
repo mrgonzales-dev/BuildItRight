@@ -12,11 +12,17 @@
 // better-sqlite3: the library that lets us talk to SQLite from JavaScript
 // path: helps build file paths that work on any operating system
 const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
 
 // ---------- Connect to the database file ----------
 // We build the path to our database file, which lives in the "database" folder
-const dbPath = path.join(__dirname, '..', 'database', 'todo.sqlite');
+const dbDir = path.join(__dirname, '..', 'database');
+const dbPath = path.join(dbDir, 'todo.sqlite');
+
+// Make sure the database directory exists (will be created on first run)
+fs.mkdirSync(dbDir, { recursive: true });
+
 // Create (or open) the database connection. If the file doesn't exist yet,
 // SQLite will create it automatically — neat!
 const db = new Database(dbPath);

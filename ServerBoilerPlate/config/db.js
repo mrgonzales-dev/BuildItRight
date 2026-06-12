@@ -22,7 +22,14 @@
  */
 
 const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
+
+const dbDir = path.join(__dirname, '..', 'database');
+const dbPath = path.join(dbDir, 'serverboilerplate.sqlite');
+
+// Make sure the database directory exists (will be created on first run)
+fs.mkdirSync(dbDir, { recursive: true });
 
 /*
  * Where does the database file live? Right here, in the project
@@ -35,7 +42,6 @@ const path = require('path');
  * path.join() safely builds file paths that work on Windows,
  * Mac, and Linux. No guessing about slashes or backslashes.
  */
-const dbPath = path.join(__dirname, '..', 'database', 'serverboilerplate.sqlite');
 const db = new Database(dbPath);
 
 /*

@@ -47,7 +47,7 @@ You'll see:
 
 Now open **http://localhost:3000** in your browser. You should see a welcome message.
 
-> **Heads up:** The `.env` file says `PORT=3000`. In development, we use `nodemon` to restart the server on every save. Nodemon reads `.env` automatically — but only when you use `npm run dev`. If you use `npm start` instead, the `.env` file is NOT loaded. We'll talk about this more in the troubleshooting section.
+> **Heads up:** The `.env` file says `PORT=3000`. Both `npm start` and `npm run dev` load `.env` (via `--env-file=.env`). The difference is that `npm run dev` uses nodemon to auto-restart the server when you save files, while `npm start` runs Node directly. So if you change `.env` while the server is running, stop it (Ctrl+C) and restart — even with `npm start`, `.env` is only read at startup.
 
 ---
 
@@ -57,6 +57,7 @@ Now open **http://localhost:3000** in your browser. You should see a welcome mes
 ServerBoilerPlate/
 ├── .env                       # PORT=3000 (which port the server listens on)
 ├── .gitignore                 # Files that should NOT be committed to git
+├── nodemon.json               # Tells nodemon how to read .env
 ├── package.json               # Dependencies, scripts, project info
 ├── server.js                  # START HERE — the entry point. Read the comments!
 │
@@ -66,8 +67,12 @@ ServerBoilerPlate/
 ├── controllers/
 │   └── programController.js   # Five programming exercises, hosted as API endpoints
 │
+├── models/                    # Your data model files go here (e.g., Message.js)
+│
 ├── routes/
 │   └── routes.js              # The URL map — connects URLs to controller functions
+│
+├── database/                  # SQLite database auto-created here on first run
 │
 └── README.md                  # You are here
 ```
@@ -86,25 +91,20 @@ ServerBoilerPlate/
 
 Every API request follows the same path:
 
-```
-Browser/curl          server.js          routes.js        programController.js
-     │                    │                   │                     │
-     │  GET /api/calc/    │                   │                     │
-     │    add/5/3         │                   │                     │
-     │ ──────────────────>│                   │                     │
-     │                    │ "I got a request" │                     │
-     │                    │ ─────────────────>│                     │
-     │                    │                   │ "URL matches         │
-     │                    │                   │  /api/calc/:op/:a/:b │
-     │                    │                   │  → programController │
-     │                    │                   │  .calc()"            │
-     │                    │                   │ ──────────────────> │
-     │                    │                   │                     │ op="add", a="5", b="3"
-     │                    │                   │                     │ result = 8
-     │                    │                   │ <────────────────── │
-     │                    │ <──────────────── │  { result: 8 }      │
-     │ <──────────────────│  { result: 8 }   │                     │
-     │  {"result":8}      │                   │                     │
+```mermaid
+sequenceDiagram
+    participant Browser as Browser/curl
+    participant Server as server.js
+    participant Routes as routes.js
+    participant Controller as programController.js
+
+    Browser->>Server: GET /api/calc/add/5/3
+    Server->>Routes: "I got a request"
+    Routes->>Controller: URL matches /api/calc/:op/:a/:b → programController.calc()
+    Note over Controller: op="add", a="5", b="3"<br/>result = 8
+    Controller-->>Routes: { result: 8 }
+    Routes-->>Server: { result: 8 }
+    Server-->>Browser: {"result":8}
 ```
 
 1. **Browser or curl** makes a request to a URL like `/api/calc/add/5/3`.
@@ -118,18 +118,9 @@ That's the whole pipeline. Four hops. Every server you'll ever build follows thi
 
 ## The Database
 
-Even this simple server has a database ready for you. It's a `messages` table — think of it as a guestbook people can sign.
+The database connection is ready to go — your challenge is to create your own tables. The `config/db.js` file has detailed comments explaining every line of the database setup, from creating the connection to defining your schema.
 
-Table: `messages`
-
-| Column | Type | Notes |
-|--------|------|-------|
-| id | INTEGER | Auto-increment — you never set this |
-| author | TEXT | Who wrote the message |
-| body | TEXT | The message content |
-| created_at | TEXT | Auto-filled with current time when row is created |
-
-> **Note:** This table isn't used by any endpoint yet. That's on purpose — it's here for when you're ready to add your first data-backed route. The `config/db.js` file has detailed comments explaining every line of the database setup.
+> **Your first task:** Add a `messages` table (a guestbook people can sign). See the Customization Guide below for how to do it. The database is primed and waiting — no setup required beyond writing your `CREATE TABLE` statement.
 
 ---
 
@@ -255,6 +246,37 @@ curl http://localhost:3000/api/calc/divide/10/0
    curl http://localhost:3000/api/check/bmi/70/1.75
    ```
 
+### How to add a `messages` table to the database
+
+1. **Open `config/db.js`** and add a `CREATE TABLE` statement inside the `db.exec()` call:
+   ```js
+   db.exec(`
+     CREATE TABLE IF NOT EXISTS messages (
+       id INTEGER PRIMARY KEY AUTOINCREMENT,
+       author TEXT NOT NULL,
+       body TEXT NOT NULL,
+       created_at TEXT DEFAULT (datetime('now'))
+     )
+   `);
+   ```
+2. **Delete the old database** — remove `database/serverboilerplate.sqlite` so the table is created fresh when you restart.
+3. **Create a model** — add `models/Message.js` with functions to insert and list messages:
+   ```js
+   const db = require('../config/db');
+   module.exports = {
+     getAll: () => db.prepare('SELECT * FROM messages ORDER BY created_at DESC').all(),
+     create: (author, body) => db.prepare('INSERT INTO messages (author, body) VALUES (?, ?)').run(author, body),
+   };
+   ```
+4. **Create a controller** — add a handler in `controllers/` and wire it up in `routes.js`.
+5. **Test it:**
+   ```bash
+   curl -X POST http://localhost:3000/api/messages \
+     -H "Content-Type: application/json" \
+     -d '{"author":"You","body":"Hello, database!"}'
+   curl http://localhost:3000/api/messages
+   ```
+
 ---
 
 ## Challenge Yourself
@@ -262,7 +284,7 @@ curl http://localhost:3000/api/calc/divide/10/0
 - 🟢 **Easy:** Change the temperature thresholds in the `checkTemperature` function. Make "warm" start at 20°C instead of 25°C.
 - 🟢 **Easy:** Add a "modulo" or "power" operation to the calculator (see customization guide above).
 - 🟡 **Medium:** Add a "grade classifier" endpoint — send a number, get back "A", "B", "C", "D", or "F".
-- 🟡 **Medium:** Create a new endpoint that uses the messages table in the database — `POST /api/messages` to save a message, `GET /api/messages` to list them.
+- 🟡 **Medium:** Create a `messages` table (see Customization Guide) — then build `POST /api/messages` to save a message and `GET /api/messages` to list them.
 - 🔴 **Hard:** Add proper error messages for edge cases. What if someone sends a negative number for BMI? What if the name is too long? Validate everything and return helpful 400 errors.
 
 ---
@@ -274,7 +296,7 @@ curl http://localhost:3000/api/calc/divide/10/0
 | `EADDRINUSE: address already in use :::3000` | Another app is using port 3000 | Close the other process, or change `PORT` in `.env` to `3001` |
 | `Cannot find module 'express'` | You forgot to run `npm install` | Run `npm install` in the project root |
 | `Connection refused` in curl | The server isn't running | Run `npm run dev` in another terminal first. We've all done this. |
-| `.env` changes not taking effect | You're using `npm start` instead of `npm run dev` | `npm run dev` uses nodemon, which reads `.env`. `npm start` uses Node directly and needs `--env-file=.env` (Node v20+). For simplicity, always use `npm run dev`. |
+| `.env` changes not taking effect | `--env-file` is read at startup, not watched for changes | Stop the process (Ctrl+C) and restart it. Both `npm start` and `npm run dev` load `.env`, but `npm run dev` auto-restarts when files change. |
 | `curl` hangs with no response | Server is down or blocked | Check the terminal where the server runs. Did it crash? Read the error message. |
 | `400` or `500` JSON error response | Invalid input or server crash | Read the error message in the JSON response — it tells you exactly what went wrong |
 
@@ -293,7 +315,7 @@ curl http://localhost:3000/api/calc/divide/10/0
 ## Production-ish Notes (optional)
 
 - For deployment, run `node --env-file=.env server.js` (Node.js v20+) to load `.env` without nodemon.
-- The `messages` table and `config/db.js` are ready for you to build on — just add a controller and a route.
+- The database and `config/db.js` are ready for you to build on — just add a table, a model, a controller, and a route.
 - No build step for the API — it's plain JavaScript. Deploy anywhere that runs Node.js.
 
 ---

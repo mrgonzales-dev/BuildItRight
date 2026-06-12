@@ -38,13 +38,21 @@ npm run dev
 That's it. Two things will start:
 
 - **Backend** on [http://localhost:3000](http://localhost:3000)
-- **Frontend** on [http://localhost:5173](http://localhost:5173)
+- **Frontend** on [http://localhost:5176](http://localhost:5176)
 
 The backend creates the SQLite database automatically on first run and seeds it with sample data (categories, products, and two demo accounts).
 
 The database file lives at `database/ecommerce.sqlite`. If you ever want a fresh start, just delete that file and restart the server.
 
 > **Why two install commands?** The root `package.json` has backend dependencies (Express, SQLite, etc.). The `client/` folder is a separate little project with its own `package.json` (React, Vite, Bootstrap). Both need to be installed. You'll get `Cannot find module 'react'` errors if you skip the second one!
+
+### Other useful commands
+
+| Command | What it does |
+|---------|-------------|
+| `npm start` | Backend only (for deployment) |
+| `npm run dev:api` | Backend only, auto-restarts when you edit code |
+| `npm run dev:web` | Frontend only (the Vite dev server) |
 
 ### Demo accounts
 
@@ -145,26 +153,23 @@ ECommerce/
 
 Let's trace what happens when a customer checks out:
 
-```
-Customer clicks         api.js            Express          cartController      Order.js model
-"Place Order"              │                 │                   │                  │
-     │                     │                 │                   │                  │
-     │ POST /api/cart/     │                 │                   │                  │
-     │   checkout          │                 │                   │                  │
-     │────────────────────>│ ───────────────>│                   │                  │
-     │                     │                 │ ─────────────────>│                  │
-     │                     │                 │                   │ Order.create()   │
-     │                     │                 │                   │ ────────────────>│
-     │                     │                 │                   │                  │
-     │                     │                 │    TRANSACTION: INSERT order →      │
-     │                     │                 │    INSERT order_items →             │
-     │                     │                 │    UPDATE product stock →           │
-     │                     │                 │    DELETE cart items                │
-     │                     │                 │                   │ <────────────────│
-     │                     │                 │                   │ order + items    │
-     │                     │                 │ <─────────────────│                  │
-     │ <───────────────────│ <───────────────│  { order }        │                  │
-     │ Redirect to Orders  │                 │                   │                  │
+```mermaid
+sequenceDiagram
+    participant Customer
+    participant A as api.js
+    participant Express
+    participant CC as cartController
+    participant OM as Order.js model
+
+    Customer->>A: POST /api/cart/checkout
+    A->>Express: Forward request
+    Express->>CC: Checkout request
+    CC->>OM: Order.create()
+    Note over CC,OM: TRANSACTION:<br/>INSERT order →<br/>INSERT order_items →<br/>UPDATE product stock →<br/>DELETE cart items
+    OM-->>CC: order + items
+    CC-->>Express: { order }
+    Express-->>A: { order }
+    A-->>Customer: Redirect to Orders
 ```
 
 The checkout wraps everything in a **database transaction** — if any step fails (like stock running out mid-checkout), everything rolls back. The cart stays intact, the stock is untouched. No half-finished orders.
@@ -255,13 +260,14 @@ Unique on `(user_id, product_id)` — adding the same product again just increas
 
 ### Relationships (Entity-Relationship)
 
-```
-users 1 ──── many cart_items
-users 1 ──── many orders
-products 1 ──── many cart_items
-products 1 ──── many order_items
-categories 1 ──── many products
-orders 1 ──── many order_items
+```mermaid
+erDiagram
+    users ||--o{ cart_items : "has"
+    users ||--o{ orders : "places"
+    products ||--o{ cart_items : "contains"
+    products ||--o{ order_items : "includes"
+    categories ||--o{ products : "contains"
+    orders ||--o{ order_items : "includes"
 ```
 
 ---
@@ -425,6 +431,27 @@ Valid statuses: `pending`, `confirmed`, `shipped`, `delivered`, `cancelled`.
 curl http://localhost:3000/api/database -H "user-id: 1"
 ```
 
+### Error cases
+
+```bash
+# Missing required field — 400 Bad Request
+curl http://localhost:3000/api/users/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Bad Register"}' \
+  -w "\nHTTP Status: %{http_code}\n"
+
+# Not found — 404 when getting a non-existing product
+curl http://localhost:3000/api/products/9999 \
+  -w "\nHTTP Status: %{http_code}\n"
+
+# Unauthorized — 403 when a non-owner tries to create a product
+curl http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -H "user-id: 2" \
+  -d '{"name":"Hacked Item","price":1,"stock":1}' \
+  -w "\nHTTP Status: %{http_code}\n"
+```
+
 ---
 
 ## Tech Stack
@@ -477,7 +504,7 @@ curl http://localhost:3000/api/database -H "user-id: 1"
 
 | Error | What It Means | What To Try |
 |-------|--------------|-------------|
-| `EADDRINUSE` on port 3000 or 5173 | Port already taken | Try `npx kill-port 3000 5173` or change ports in `.env` and `client/vite.config.js` |
+| `EADDRINUSE` on port 3000 or 5176 | Port already taken | Try `npx kill-port 3000 5176` or change ports in `.env` and `client/vite.config.js` |
 | `Cannot find module 'react'` | Frontend deps not installed | Run `npm install --prefix client` — don't skip the second install step! |
 | `Cannot find module 'better-sqlite3'` | Backend deps not installed | Run `npm install` in the project root |
 | Database errors | SQLite file corrupted | Delete `database/ecommerce.sqlite` and restart — the server will recreate and seed it |

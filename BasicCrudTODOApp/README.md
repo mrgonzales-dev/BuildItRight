@@ -115,20 +115,21 @@ BasicCrudTODOApp/
 
 Here's the flow when you click "Add" and save a task:
 
-```
-Browser (React)          Vite proxy          Express              SQLite
-     │                       │                  │                    │
-     │  POST /api/todos      │                  │                    │
-     │ ─────────────────────>│ ────────────────>│                    │
-     │                       │                  │  todoController    │
-     │                       │                  │  .create()         │
-     │                       │                  │ ──────────────────>│
-     │                       │                  │  INSERT ...        │
-     │                       │                  │<────────────────── │
-     │                       │                  │  JSON todo         │
-     │<──────────────────────│<─────────────────│                    │
-     │  201 + new todo       │                  │                    │
-     │  list refreshes       │                  │                    │
+```mermaid
+sequenceDiagram
+    participant Browser as Browser (React)
+    participant Vite as Vite proxy
+    participant Express as Express
+    participant SQLite as SQLite
+
+    Browser->>Vite: POST /api/todos
+    Vite->>Express: POST /api/todos
+    Express->>SQLite: todoController.create()
+    Express->>SQLite: INSERT ...
+    SQLite-->>Express: JSON todo
+    Express-->>Vite: JSON todo
+    Vite-->>Browser: 201 + new todo
+    Note over Browser: list refreshes
 ```
 
 1. **Frontend** (`useTodos.js`) calls `api.todos.create(...)`.

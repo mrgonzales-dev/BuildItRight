@@ -110,48 +110,46 @@ LibrarySystem/
 
 Every API request follows the same path:
 
-```
-Browser               Vite proxy          Express              Controller            Model
-   │                       │                  │                     │                   │
-   │ GET /api/books/5      │                  │                     │                   │
-   │──────────────────────>│ ────────────────>│                     │                   │
-   │                       │                  │ /api/books/:id →    │                   │
-   │                       │                  │ bookController      │                   │
-   │                       │                  │ ───────────────────>│                   │
-   │                       │                  │                     │ Book.getById(5)   │
-   │                       │                  │                     │ ─────────────────>│
-   │                       │                  │                     │  SELECT * FROM    │
-   │                       │                  │                     │  books WHERE id=5 │
-   │                       │                  │                     │ <─────────────────│
-   │                       │                  │ <───────────────────│ { book object }   │
-   │<──────────────────────│<─────────────────│  JSON response      │                   │
-   │ Shows book details    │                  │                     │                   │
+```mermaid
+sequenceDiagram
+    participant Browser as Browser
+    participant Vite as Vite proxy
+    participant Express as Express
+    participant Controller as Controller
+    participant Model as Model
+
+    Browser->>Vite: GET /api/books/5
+    Vite->>Express: 
+    Express->>Controller: /api/books/:id → bookController
+    Controller->>Model: Book.getById(5)
+    Model->>Controller: SELECT * FROM books WHERE id=5
+    Controller-->>Express: { book object }
+    Express-->>Vite: JSON response
+    Vite-->>Browser: 
+    Note over Browser: Shows book details
 ```
 
 ### Borrowing flow (the fun part)
 
-```
-Borrowings.jsx         api.js          Express         borrowingController      Borrowing.js model
-     │                    │                │                    │                      │
-     │ POST /api/         │                │                    │                      │
-     │   borrowings       │                │                    │                      │
-     │───────────────────>│ ──────────────>│                    │                      │
-     │                    │                │ ──────────────────>│                      │
-     │                    │                │                    │ Validate book_id,     │
-     │                    │                │                    │ member_id, due_date   │
-     │                    │                │                    │                      │
-     │                    │                │                    │ Borrowing.borrow()    │
-     │                    │                │                    │ ────────────────────>│
-     │                    │                │                    │                      │
-     │                    │                │   TRANSACTION:     │                      │
-     │                    │                │   INSERT borrowing │                      │
-     │                    │                │   UPDATE books     │                      │
-     │                    │                │   SET available =  │                      │
-     │                    │                │     available - 1  │                      │
-     │                    │                │                    │ <────────────────────│
-     │                    │                │ <──────────────────│                      │
-     │<───────────────────│<───────────────│ { borrowing }      │                      │
-     │ List refreshes     │                │                    │                      │
+```mermaid
+sequenceDiagram
+    participant UI as Borrowings.jsx
+    participant API as api.js
+    participant Express as Express
+    participant Controller as borrowingController
+    participant Model as Borrowing.js model
+
+    UI->>API: POST /api/borrowings
+    API->>Express: 
+    Express->>Controller: 
+    Controller->>Controller: Validate book_id, member_id, due_date
+    Controller->>Model: Borrowing.borrow()
+    Note over Model: TRANSACTION:<br/>INSERT borrowing<br/>UPDATE books<br/>SET available = available - 1
+    Model-->>Controller: 
+    Controller-->>Express: { borrowing }
+    Express-->>API: 
+    API-->>UI: 
+    Note over UI: List refreshes
 ```
 
 **Key detail:** When you borrow a book, the code uses a database transaction to:
@@ -162,7 +160,7 @@ Both happen together or neither happens. No book can be borrowed into negative q
 
 ### Overdue detection
 
-The `GET /api/borrowings/overdue` endpoint checks every borrowing where `return_date IS NULL` (still borrowed) and `due_date < date('now')`. It **updates the status to 'overdue'** on read. This is a design choice — the status is updated when you look at it, not continuously. Keep this in mind: a GET request that modifies data is unusual, but it works for this project's scope.
+The `GET /api/borrowings/overdue` endpoint uses a `CASE WHEN` computed column in its SQL query — it compares `due_date` against `date('now')` and returns `'overdue'` as the `calculated_status` when a book is overdue. It never writes to the `status` column in the database. This is a design choice: the overdue status is calculated dynamically on read, not stored permanently. No GET request modifies data — it's all computed on the fly.
 
 ### Form data types
 
@@ -235,10 +233,11 @@ Four tables, linked by foreign keys.
 
 ### Relationships
 
-```
-categories 1 ──── many books
-books      1 ──── many borrowing
-members    1 ──── many borrowing
+```mermaid
+erDiagram
+    categories ||--o{ books : "1 to many"
+    books ||--o{ borrowing : "1 to many"
+    members ||--o{ borrowing : "1 to many"
 ```
 
 ---
@@ -447,7 +446,7 @@ curl http://localhost:3000/api/database | python3 -m json.tool
 | `Cannot find module 'better-sqlite3'` | Backend deps not installed | Run `npm install` in project root |
 | Book quantity goes negative | Borrow logic might have a bug | The transaction should check `available_quantity > 0` before allowing a borrow. If you see negative numbers, check the `Borrowing.borrow()` model. |
 | Form sends strings to number columns | Frontend sends `"1"` instead of `1` | This is normal — HTTP form data is always strings. The controllers handle the conversion with `Number()`. If you add a new numeric field, make sure to convert it in the controller. |
-| Overdue books don't show as overdue | Status only updates when you hit the overdue endpoint | Go to `http://localhost:3000/api/borrowings/overdue` in curl or click "Overdue" in the app. The status is computed on read — it doesn't update automatically. |
+| Overdue books don't show as overdue | Overdue status is computed dynamically, not stored | Go to `http://localhost:3000/api/borrowings/overdue` in curl or click "Overdue" in the app. The status is computed via a `CASE WHEN` SQL expression — no data is modified. |
 | Delete category fails | Books still reference the category | You must delete (or reassign) all books in that category before deleting the category. |
 
 ---
@@ -463,7 +462,7 @@ curl http://localhost:3000/api/database | python3 -m json.tool
 
 ## Production-ish Notes (optional)
 
-- The overdue check (updating status on GET) is fine for a small school project but not for production. In a real app, you'd run a scheduled job or calculate overdue status in the SQL query instead of modifying data on read.
+- The overdue check uses a computed `CASE WHEN` column — the status is calculated dynamically, never stored. This is fine for a small school project. In a real app, you'd still calculate overdue status in the SQL query (same approach) or run a scheduled job to cache the result for performance.
 - No authentication means anyone can borrow or return anything. Add auth before deploying anywhere public.
 - The `database/library.sqlite` file is auto-created. Back it up before making big changes.
 

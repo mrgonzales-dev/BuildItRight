@@ -43,12 +43,22 @@ npm run dev
 
 This starts the API backend on **http://localhost:3000** and the React frontend on **http://localhost:5173**. Open the frontend URL in your browser.
 
+The frontend runs on Vite's dev server, which automatically proxies any `/api` request to the backend — so you don't need to configure CORS or manage separate URLs. Everything just works.
+
 If you'd rather start them separately:
 
 ```bash
 npm run dev:api      # just the backend
 npm run dev:web      # just the frontend
 ```
+
+### Other useful commands
+
+| Command | What it does |
+|---------|-------------|
+| `npm start` | Backend only (for deployment) |
+| `npm run dev:api` | Backend only, auto-restarts when you edit code |
+| `npm run dev:web` | Frontend only (the Vite dev server) |
 
 ### Default admin PIN
 
@@ -146,39 +156,28 @@ Think of three roles: **admin**, **voter**, and **the system itself**.
 
 ### Voter flow
 
-```
-VoteKiosk.jsx    VoteAccess.jsx    VoteBallot.jsx    api.js         voteController
-     │                │                  │               │                 │
-     │ "Vote Now"     │                  │               │                 │
-     │───────────────>│                  │               │                 │
-     │                │ Enter access     │               │                 │
-     │                │ code "A1B2C3"   │               │                 │
-     │                │─────────────────>│               │                 │
-     │                │                  │ POST /api/    │                 │
-     │                │                  │ vote/validate │                 │
-     │                │                  │ ─────────────>│ ───────────────>│
-     │                │                  │               │ Check code      │
-     │                │                  │               │ exists, hasn't  │
-     │                │                  │               │ voted yet       │
-     │                │                  │               │ <───────────────│
-     │                │                  │ <─────────────│ ballot info     │
-     │                │                  │ Show ballot   │                 │
-     │                │                  │               │                 │
-     │                │                  │ Voter selects │                 │
-     │                │                  │ candidates,   │                 │
-     │                │                  │ clicks Submit │                 │
-     │                │                  │ ─────────────>│ POST /api/      │
-     │                │                  │               │   vote/cast     │
-     │                │                  │               │ ───────────────>│
-     │                │                  │               │ Insert ballot,  │
-     │                │                  │               │ vote_selections,│
-     │                │                  │               │ audit log       │
-     │                │                  │               │ <───────────────│
-     │                │                  │ <─────────────│ receipt code    │
-     │                │                  │               │                 │
-     │                │                  │ ───────────────────────────────>│
-     │                │                  │    VoteReceipt.jsx              │
-     │                │                  │    shows receipt code           │
+```mermaid
+sequenceDiagram
+    participant Kiosk as VoteKiosk.jsx
+    participant Access as VoteAccess.jsx
+    participant Ballot as VoteBallot.jsx
+    participant API as api.js
+    participant Ctrl as voteController
+
+    Kiosk->>Access: "Vote Now"
+    Access->>Ballot: Enter access code "A1B2C3"
+    Ballot->>API: POST /api/vote/validate
+    API->>Ctrl: Forward request
+    Ctrl->>Ctrl: Check code exists, hasn't voted yet
+    Ctrl-->>API: ballot info
+    API-->>Ballot: Show ballot
+    Note over Ballot: Voter selects candidates, clicks Submit
+    Ballot->>API: POST /api/vote/cast
+    API->>Ctrl: Forward request
+    Ctrl->>Ctrl: Insert ballot, vote_selections, audit log
+    Ctrl-->>API: receipt code
+    API-->>Ballot: receipt code
+    Note over Ballot: VoteReceipt.jsx shows receipt code
 ```
 
 1. Go to the "Vote Now" page (or `/student_vote`).
@@ -290,14 +289,15 @@ Seven tables. Let's walk through them.
 
 ### Relationships
 
-```
-elections  1 ──── many positions
-elections  1 ──── many ballots
-elections  1 ──── many audit_log entries
-positions  1 ──── many candidates
-positions  1 ──── many vote_selections
-voters     1 ──── many ballots
-ballots    1 ──── many vote_selections
+```mermaid
+erDiagram
+    elections ||--o{ positions : "has"
+    elections ||--o{ ballots : "has"
+    elections ||--o{ audit_log : "has"
+    positions ||--o{ candidates : "has"
+    positions ||--o{ vote_selections : "has"
+    voters ||--o{ ballots : "casts"
+    ballots ||--o{ vote_selections : "includes"
 ```
 
 ---
@@ -472,6 +472,25 @@ curl -s http://localhost:3000/api/vote/receipt/THE_RECEIPT_CODE
 
 ```bash
 curl -s http://localhost:3000/api/elections/1/results
+```
+
+### Error cases
+
+```bash
+# Invalid admin PIN — 401 Unauthorized
+curl -s http://localhost:3000/api/elections \
+  -H "x-admin-pin:wrongpin"
+
+# Missing required field — 400 Bad Request
+curl -s -X POST http://localhost:3000/api/elections \
+  -H "Content-Type: application/json" \
+  -H "x-admin-pin:1234" \
+  -d '{}'
+
+# Invalid access code — 400 when voting with a bad code
+curl -s -X POST http://localhost:3000/api/vote/cast \
+  -H "Content-Type: application/json" \
+  -d '{"access_code":"NOTREAL","selections":[]}'
 ```
 
 ---

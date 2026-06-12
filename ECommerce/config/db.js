@@ -1,8 +1,14 @@
 const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-const dbPath = path.join(__dirname, '..', 'database', 'ecommerce.sqlite');
+const dbDir = path.join(__dirname, '..', 'database');
+const dbPath = path.join(dbDir, 'ecommerce.sqlite');
+
+// Make sure the database directory exists (will be created on first run)
+fs.mkdirSync(dbDir, { recursive: true });
+
 const db = new Database(dbPath);
 
 db.pragma('journal_mode = WAL');

@@ -79,9 +79,9 @@ npm run dev
 
 You'll see two things start up:
 - **API server** on `http://localhost:3001` (blue text in terminal)
-- **Frontend** on `http://localhost:5173` (green text in terminal)
+- **Frontend** on `http://localhost:5175` (green text in terminal)
 
-Open your browser to **http://localhost:5173** and start chatting.
+Open your browser to **http://localhost:5175** and start chatting.
 
 ### Demo
 
@@ -136,32 +136,25 @@ BasicAiChatBot/
 
 Here's what happens when you type a message and hit send:
 
-```
-You type "What's the capital of France?"
-         │
-         ▼
-   Chat.jsx calls api.ai.chat()
-         │
-         ▼
-   POST /api/ai/chat  ──►  aiController.js
-         │                       │
-         │                 1. Saves your message to SQLite
-         │                 2. Loads the whole conversation history
-         │                 3. Sends everything to Groq
-         │                       │
-         │                       ▼
-         │              config/ai.js
-         │              (sends to Groq with system prompt:
-         │               "You are a helpful, friendly assistant...")
-         │                       │
-         │                       ▼
-         │              Groq responds: "Paris!"
-         │                       │
-         │                 4. Saves the AI reply to SQLite
-         │                 5. Returns the reply to the frontend
-         │                       │
-         ▼                       ▼
-   Chat.jsx updates the messages on screen
+```mermaid
+sequenceDiagram
+    participant User as You
+    participant FE as Chat.jsx
+    participant BE as aiController.js
+    participant AI as config/ai.js
+    participant Groq as Groq API
+
+    User->>FE: Type "What's the capital of France?"
+    FE->>BE: POST /api/ai/chat
+    BE->>BE: 1. Saves your message to SQLite
+    BE->>BE: 2. Loads the whole conversation history
+    BE->>AI: 3. Sends everything to Groq
+    AI->>Groq: Sends with system prompt:<br/>"You are a helpful, friendly assistant..."
+    Groq-->>AI: Responds: "Paris!"
+    AI-->>BE: Returns response
+    BE->>BE: 4. Saves the AI reply to SQLite
+    BE-->>FE: 5. Returns the reply to the frontend
+    FE-->>User: Chat.jsx updates the messages on screen
 ```
 
 **The database remembers everything.** Close your browser, come back tomorrow — your conversations are still there. Each conversation has its own history, so the AI remembers what you were talking about.
@@ -310,7 +303,7 @@ curl -X POST http://localhost:3001/api/ai/chat \
 | Error | What It Means | What To Try |
 |-------|--------------|-------------|
 | `EADDRINUSE: address already in use :::3001` | Another app is using port 3001 | Close it, or change `PORT` in `.env` to `3002` — also update the proxy in `client/vite.config.js` |
-| `EADDRINUSE` on port 5173 | Another Vite app is running | Stop the other one, or Vite will auto-offer the next free port |
+| `EADDRINUSE` on port 5175 | Another Vite app is running | Stop the other one, or Vite will auto-offer the next free port |
 | `GROQ_API_KEY is not set` or API errors | Your Groq key is missing/wrong | Check `.env` — make sure you replaced the placeholder with your real key from [console.groq.com](https://console.groq.com/keys) |
 | AI not responding / messages appear but no reply | The AI call failed silently | Open browser DevTools (F12) → Network tab → look for `/api/ai/chat`. Check the response. Also check the terminal running the server for error messages. |
 | AI replies "Sorry, something went wrong" | Groq API returned an error | Check your `.env` key again. Go to [console.groq.com](https://console.groq.com) to check if you still have credits (usage is shown on the dashboard) |
