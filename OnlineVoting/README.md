@@ -41,7 +41,7 @@ npm install --prefix client
 npm run dev
 ```
 
-This starts the API backend on **http://localhost:3000** and the React frontend on **http://localhost:5173**. Open the frontend URL in your browser.
+This starts the API backend on **http://localhost:3000** and the React frontend on **http://localhost:5178**. Open the frontend URL in your browser.
 
 The frontend runs on Vite's dev server, which automatically proxies any `/api` request to the backend — so you don't need to configure CORS or manage separate URLs. Everything just works.
 
@@ -460,7 +460,7 @@ curl -s -X POST http://localhost:3000/api/vote/cast \
 
 Replace `THE_VOTER_ACCESS_CODE` with the actual code from voter registration. The response contains a `receipt_code` — hang onto it.
 
-> **Blank ballot note:** If you don't send any selections (empty array), the vote is still accepted. The system creates a ballot with no selections. This means a voter can submit a blank ballot — something to consider if you're customizing validation rules.
+> **Blank ballot note:** If you send an empty selections array, the request is rejected with a `400 Bad Request` error. The `cast` endpoint requires at least one selection. If you want to allow blank ballots, you'd need to modify the validation in `controllers/voteController.js`.
 
 ### Check a receipt
 
@@ -478,8 +478,10 @@ curl -s http://localhost:3000/api/elections/1/results
 
 ```bash
 # Invalid admin PIN — 401 Unauthorized
-curl -s http://localhost:3000/api/elections \
-  -H "x-admin-pin:wrongpin"
+curl -s -X POST http://localhost:3000/api/elections \
+  -H "Content-Type: application/json" \
+  -H "x-admin-pin:wrongpin" \
+  -d '{"title":"Test"}'
 
 # Missing required field — 400 Bad Request
 curl -s -X POST http://localhost:3000/api/elections \
@@ -503,7 +505,7 @@ curl -s -X POST http://localhost:3000/api/vote/cast \
 | better-sqlite3 | Talks to SQLite | Synchronous — no async/await needed |
 | cors | Cross-origin requests | So the browser can talk to the API |
 | multer | File upload handling | For CSV voter import |
-| csv-parse | CSV parsing library | Reads uploaded voter CSV files |
+| *(custom parser)* | Built-in CSV parser in `voterController.js` | Reads uploaded voter CSV files without external dependencies |
 | react | UI library | Builds the admin panel and voting kiosk |
 | react-router-dom | Client-side routing | Multi-page app experience |
 | bootstrap | CSS framework | Clean UI (CSS only, no JS) |
@@ -557,11 +559,11 @@ The default system requires the admin to manually distribute access codes to vot
 | Error | What It Means | What To Try |
 |-------|--------------|-------------|
 | `EADDRINUSE` on port 3000 | Another app is using that port | Kill the other process or change `PORT` in `.env` — also update `client/vite.config.js` |
-| `EADDRINUSE` on port 5173 | Another Vite app is running | Stop it, or Vite will auto-offer the next port |
+| `EADDRINUSE` on port 5178 | Another Vite app is running | Stop it, or Vite will auto-offer the next port |
 | Admin PIN not working | PIN in `.env` doesn't match what you're sending | Check `.env` — default is `1234`. Make sure you're using `x-admin-pin` header (not `Authorization`) |
 | Access code validation fails | Code doesn't exist, or voter already voted | The access code is case-sensitive. Check the Voters page for the exact code. Each code works only once per election. |
 | CSV upload fails | File format doesn't match what's expected | Download the CSV template first: `GET /api/voters/template`. Make sure your CSV has the same columns. CSV paste in a browser vs file upload may parse differently — try uploading an actual file. |
-| Blank ballot accepted | Empty selections array doesn't trigger an error | This is expected behavior — the system allows blank ballots. To block them, add validation in `controllers/voteController.js`. |
+| Blank ballot rejected | Empty selections array triggers a 400 error | The `cast` endpoint requires at least one selection. To allow blank ballots, remove the `selections.length === 0` check in `controllers/voteController.js`. |
 | Results show nothing | Election isn't closed yet, or no votes cast | Results are hidden until the election status is `closed`. Activate → let voters vote → close → view results. |
 | Two elections active at once | Tried to activate a second election | The `activate` endpoint auto-closes the current active election. Only one can be active at a time. |
 | `Cannot find module 'react'` | Frontend deps not installed | Run `npm install --prefix client` |

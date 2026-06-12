@@ -76,6 +76,14 @@ db.pragma('foreign_keys = ON');
  * This project doesn't ship with a built-in table — it's
  * meant for you to practice adding your own schema.
  */
+
+/*
+ * Add your own tables below:
+ *   db.exec(\`CREATE TABLE ...\`);
+ */
+// Example: uncomment and modify to create your first table:
+// db.exec(\`CREATE TABLE IF NOT EXISTS messages (...)\`);
+
 /*
  * EXPORT -- Share this connection with the whole project.
  *

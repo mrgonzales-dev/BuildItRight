@@ -258,13 +258,38 @@ curl http://localhost:3000/api/auth/me \
    ```
    Or just add it to the CREATE TABLE statement and delete the database file to recreate it.
 
-2. **Update the User model** — in `models/User.js`, add `phone` to the `update` method.
+2. **Add an `update` method to the User model** — in `models/User.js`, create a new method that can change a user's profile fields. Use the existing `create` method as a template. Add this right before the closing `};`:
 
-3. **Update the authController** — in `controllers/authController.js`, include `phone` in the `updateProfile` handler.
+   ```js
+   update(id, data) {
+     db.prepare('UPDATE users SET phone = ? WHERE id = ?').run(data.phone, id);
+     return User.getById(id);
+   }
+   ```
 
-4. **Update the Dashboard page** — in `client/src/pages/Dashboard.jsx`, add a phone input to the profile form.
+3. **Add an `updateProfile` handler to the auth controller** — in `controllers/authController.js`, add a new handler inside the `authController` object (after the `me` handler, before the closing `};`):
 
-5. **Test it** — register a new user, then update their profile with a phone number.
+   ```js
+   updateProfile(req, res) {
+     try {
+       const { phone } = req.body;
+       const user = User.update(req.userId, { phone });
+       res.json({ user: stripPassword(user) });
+     } catch (err) {
+       res.status(500).json({ error: err.message });
+     }
+   },
+   ```
+
+4. **Add the route** — in `routes/routes.js`, register the new endpoint:
+
+   ```js
+   router.put('/auth/profile', auth, authController.updateProfile);
+   ```
+
+5. **Update the Dashboard page** — in `client/src/pages/Dashboard.jsx`, add a phone input to the profile form.
+
+6. **Test it** — register a new user, then update their profile with a phone number.
 
 ### Change the JWT expiry time
 

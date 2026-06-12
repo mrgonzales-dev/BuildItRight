@@ -180,7 +180,7 @@ curl http://localhost:3000/api/check/palindrome/madam
 curl http://localhost:3000/api/check/palindrome/hello
 ```
 
-### Error cases (these are feature, not bugs)
+### Error cases (these are features, not bugs)
 
 ```bash
 # Sending a word instead of a number

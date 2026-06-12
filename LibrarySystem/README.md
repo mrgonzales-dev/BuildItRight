@@ -144,7 +144,7 @@ sequenceDiagram
     Express->>Controller: 
     Controller->>Controller: Validate book_id, member_id, due_date
     Controller->>Model: Borrowing.borrow()
-    Note over Model: TRANSACTION:<br/>INSERT borrowing<br/>UPDATE books<br/>SET available = available - 1
+    Note over Model: TRANSACTION:<br/>INSERT INTO borrowings<br/>UPDATE books<br/>SET available = available - 1
     Model-->>Controller: 
     Controller-->>Express: { borrowing }
     Express-->>API: 
@@ -217,7 +217,7 @@ Four tables, linked by foreign keys.
 | created_at | TEXT | Auto-filled |
 | updated_at | TEXT | Auto-filled |
 
-### Table: `borrowing` (singular — note the table name!)
+### Table: `borrowings` (plural — don't forget the 's'!)
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -236,8 +236,8 @@ Four tables, linked by foreign keys.
 ```mermaid
 erDiagram
     categories ||--o{ books : "1 to many"
-    books ||--o{ borrowing : "1 to many"
-    members ||--o{ borrowing : "1 to many"
+    books ||--o{ borrowings : "1 to many"
+    members ||--o{ borrowings : "1 to many"
 ```
 
 ---
@@ -281,7 +281,7 @@ erDiagram
 | Method | Endpoint | What it does |
 |--------|----------|-------------|
 | GET | `/api/borrowings` | List all |
-| GET | `/api/borrowings/overdue` | List overdue borrowings (updates status on read) |
+| GET | `/api/borrowings/overdue` | List overdue borrowings (status computed via CASE WHEN — read only) |
 | GET | `/api/borrowings/:id` | Get one |
 | GET | `/api/borrowings/by-member/:memberId` | Get by member |
 | GET | `/api/borrowings/by-book/:bookId` | Get by book |
