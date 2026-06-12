@@ -38,7 +38,7 @@ What happens:
 1. `npm install` — installs backend packages AND client packages (via the `postinstall` script).
 2. `npm run dev` — starts **both** at once:
    - **API** → http://localhost:3000
-   - **Frontend** → http://localhost:5173 ← open this in your browser
+   - **Frontend** → http://localhost:5174 ← open this in your browser
 
 The frontend talks to the backend through `/api`. In dev mode, Vite proxies those requests to port 3000 so you don't have to configure anything extra.
 
@@ -267,7 +267,7 @@ If curl says "Connection refused," the API isn't running yet. Start it first —
 1. **Open `client/src/App.css`** and find the CSS variables at the top
 2. Change the colors to whatever you like:
    ```css
-   --primary: #your-color;
+   --accent: #your-color;
    --bg: #your-background;
    ```
 3. The page refreshes automatically.
@@ -276,8 +276,8 @@ If curl says "Connection refused," the API isn't running yet. Start it first —
 
 ## Challenge Yourself
 
-- 🟢 **Easy:** Add a `description` field to new todos and display it in the list.
-- 🟢 **Easy:** Change the card background color in `App.css` — find the `.todo-card` class and play with the CSS.
+- 🟢 **Easy:** Display the `created_at` timestamp on each todo row — the data is already returned by the API, it just isn't rendered in `TodoList.jsx` yet.
+- 🟢 **Easy:** Change the card background color in `App.css` — find the `.floating-card` class and play with the CSS.
 - 🟡 **Medium:** Add a **search/filter** feature — a search bar at the top that filters todos by title. Should this be frontend-only or a backend endpoint?
 - 🟡 **Medium:** Add a **due date** field (see customization guide above). Sort todos by due date with the most urgent tasks first.
 - 🔴 **Hard:** Add **categories/tags** — create a second table in the database, link it to todos with a foreign key, and add a filter dropdown in the UI.
@@ -289,9 +289,9 @@ If curl says "Connection refused," the API isn't running yet. Start it first —
 | Error | What It Means | What To Try |
 |-------|--------------|-------------|
 | `EADDRINUSE` on port 3000 | Something else is already using that port | Stop the other process, or run `PORT=3001 npm run dev:api` — also change the proxy in `client/vite.config.js` |
-| `EADDRINUSE` on port 5173 | Another Vite app is running | Stop it, or Vite will offer the next free port (usually 5174) |
+| `EADDRINUSE` on port 5174 | Another Vite app is running | Stop it, or Vite will offer the next free port (usually 5175) — also check `client/vite.config.js` for the configured port |
 | `Connection refused` in browser or curl | Server not started | Run `npm run dev` from the project root |
-| Blank page at `:5173` | Frontend crashed or build error | Check the terminal running Vite; run `cd client && npm run build` to see errors |
+| Blank page at `:5174` | Frontend crashed or build error | Check the terminal running Vite; run `cd client && npm run build` to see errors |
 | `Completed must be a boolean` | Sent `"true"` as a string instead of `true` | Use real JSON booleans, not quoted strings. In curl: `'{"completed":true}'` NOT `'{"completed":"true"}'` |
 | `Cannot find module 'react'` | Frontend deps not installed | Run `npm install --prefix client` manually |
 | `Cannot find module 'express'` | Backend deps not installed | Run `npm install` in the project root |
