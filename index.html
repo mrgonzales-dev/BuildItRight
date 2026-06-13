@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildItRight — Full-Stack Project Templates</title>
+  <meta
+    name="description"
+    content="A collection of ready-to-run full-stack project templates that teach you how real-world apps are structured. Skip the setup. Start building."
+  />
+
+  <!-- ===== Tailwind CSS via CDN ===== -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ===== Google Fonts: Poppins + Open Sans ===== -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap');
+  </style>
+
+  <!-- ===== Tailwind Config ===== -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body: ['Open Sans', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- ===== Custom Styles ===== -->
+  <style>
+    /* --- Base --- */
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* --- Carousel --- */
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+    .carousel-slide {
+      flex: 0 0 100%;
+      min-width: 0;
+      padding: 0 0.5rem;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .carousel-slide {
+        flex: 0 0 33.3333%;
+      }
+    }
+
+    /* --- Carousel viewport (clips horizontal only so card hover isn't cut) --- */
+    .carousel-viewport {
+      overflow-x: clip;
+      border-radius: 0.75rem;
+    }
+
+    /* --- Carousel arrows --- */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      background: #1E293B;
+      color: #E2E8F0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+    }
+    .carousel-arrow:hover {
+      background: #0EA5E9;
+      color: white;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+    }
+    .carousel-arrow:focus-visible {
+      ring: 2px solid #0EA5E9;
+      ring-offset: 2px;
+    }
+    .carousel-arrow-left {
+      left: 0.5rem;
+    }
+    .carousel-arrow-right {
+      right: 0.5rem;
+    }
+    @media (min-width: 768px) {
+      .carousel-arrow-left {
+        left: -1.25rem;
+      }
+      .carousel-arrow-right {
+        right: -1.25rem;
+      }
+    }
+
+    /* --- Dot indicators (simple fixed-size circles) --- */
+    .carousel-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 9999px;
+      background: #475569;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: #0EA5E9;
+    }
+    .carousel-dot:hover {
+      background: #64748B;
+    }
+    .carousel-dot:focus-visible {
+      outline: 2px solid #0EA5E9;
+      outline-offset: 2px;
+    }
+
+    /* --- Project card --- */
+    .project-card {
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card:hover {
+      box-shadow: 0 12px 32px rgba(14, 165, 233, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* --- Tag badge --- */
+    .tech-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: #334155;
+      color: #CBD5E1;
+      letter-spacing: 0.01em;
+    }
+
+    /* --- Flowchart nodes --- */
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 1rem;
+      border-radius: 0.75rem;
+      text-align: center;
+      min-width: 5.5rem;
+    }
+    .flow-node .node-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .flow-node .node-sub {
+      font-size: 0.7rem;
+      margin-top: 0.125rem;
+      opacity: 0.75;
+    }
+
+    /* --- Flow arrows --- */
+    .flow-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      padding: 0 0.125rem;
+      min-width: 2.5rem;
+    }
+    .flow-arrow .arrow-line {
+      display: block;
+      width: 1.75rem;
+      height: 2px;
+      background: #475569;
+      position: relative;
+    }
+    .flow-arrow .arrow-line::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid #475569;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+    }
+    .flow-arrow .arrow-label {
+      font-size: 0.65rem;
+      color: #94A3B8;
+      margin-top: 0.25rem;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .flow-arrow.reverse .arrow-line::after {
+      left: -5px;
+      right: auto;
+      border-left: 0;
+      border-right: 6px solid #475569;
+    }
+    .flow-arrow.reverse .arrow-label {
+      order: -1;
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+    }
+
+    /* --- Code blocks --- */
+    pre {
+      background: #1E293B;
+      color: #E2E8F0;
+      font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', monospace;
+      font-size: 0.85rem;
+      padding: 1.125rem 1.25rem;
+      border-radius: 0.75rem;
+      overflow-x: auto;
+      line-height: 1.55;
+      margin: 0.75rem 0 1.5rem;
+    }
+    pre .cmd {
+      color: #7DD3FC;
+    }
+    pre .comment {
+      color: #94A3B8;
+      font-style: italic;
+    }
+
+    /* --- Command table --- */
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .cmd-table th,
+    .cmd-table td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #334155;
+    }
+    .cmd-table th {
+      font-weight: 600;
+      color: #E2E8F0;
+      background: #1E293B;
+    }
+    .cmd-table td:first-child {
+      font-family: 'SF Mono', 'Fira Code', 'Roboto Mono', 'Consolas', monospace;
+      font-size: 0.82rem;
+      color: #0EA5E9;
+      white-space: nowrap;
+    }
+    .cmd-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    /* --- Responsive table --- */
+    @media (max-width: 480px) {
+      .cmd-table td:first-child {
+        white-space: normal;
+        word-break: break-all;
+      }
+    }
+
+    /* --- Reduced motion --- */
+    @media (prefers-reduced-motion: reduce) {
+      .carousel-track {
+        transition: none;
+      }
+      .carousel-arrow,
+      .project-card {
+        transition: none;
+      }
+      .carousel-dot {
+        transition: none;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#0F172A] text-[#CBD5E1] antialiased">
+
+  <!-- ===== HERO ===== -->
+  <header class="relative overflow-hidden">
+    <!-- Subtle background decoration -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-[#0EA5E9]/5 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-[#38BDF8]/5 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 sm:pt-28 sm:pb-20 text-center">
+      <h1 class="font-heading text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-[#F1F5F9] leading-[1.1]">
+        BuildItRight
+      </h1>
+      <p class="mt-4 text-xl sm:text-2xl font-semibold text-[#0EA5E9]">
+        Skip the setup. Start building.
+      </p>
+      <p class="mt-4 text-base sm:text-lg text-[#CBD5E1] max-w-2xl mx-auto leading-relaxed">
+        A collection of ready-to-run full-stack project templates that teach you
+        how real-world apps are structured — so you can stop wrestling with config
+        and start writing the code that matters.
+      </p>
+      <!-- Subtle scroll indicator -->
+      <div class="mt-10 flex justify-center gap-3">
+        <a
+          href="#projects"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-[#0EA5E9] text-white font-semibold rounded-full hover:bg-[#0284C7] transition-colors duration-200 cursor-pointer shadow-lg shadow-[#0EA5E9]/20"
+        >
+          Explore Projects
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DIVIDER ===== -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <hr class="border-0 h-px bg-[#334155]" />
+  </div>
+
+  <!-- ===== PROJECTS CAROUSEL ===== -->
+  <section id="projects" class="py-16 sm:py-20">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-[#F1F5F9]">
+          The Projects
+        </h2>
+        <p class="mt-3 text-[#CBD5E1] max-w-xl mx-auto">
+          Seven complete, zero-config projects. Each one is a real full-stack app
+          built with <strong>Express + better-sqlite3</strong> on the backend and
+          <strong>Vite + React</strong> on the frontend. Pick a project that
+          matches what you want to learn — they're all ready to run.
+        </p>
+      </div>
+
+      <!-- Carousel container -->
+      <div class="relative" id="carousel">
+        <!-- Track -->
+          <div class="carousel-viewport">
+          <div class="carousel-track" id="carousel-track">
+          <!-- ===== ServerBoilerPlate ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 1 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">ServerBoilerPlate</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                A bare-bones Express server with programming exercises as live API
+                endpoints. No frontend — just curl and a terminal.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== BasicAuth ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 2 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">BasicAuth</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                Register, log in, see your profile. Pure authentication explained
+                end to end.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== BasicCrudTODOApp ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 3 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">BasicCrudTODOApp</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                A classic todo list — create, read, update, delete — with a database
+                and React frontend.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== BasicAiChatBot ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 4 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">BasicAiChatBot</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                An AI chatbot powered by Groq's free API, with conversation history
+                saved to SQLite.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+                <span class="tech-tag">AI</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== ECommerce ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 5 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">ECommerce</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                A single-owner e-commerce storefront with products, cart, and orders
+                — separate owner/customer views.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== LibrarySystem ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 6 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">LibrarySystem</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                Library management with books, members, borrow/return, and overdue
+                tracking.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+              </div>
+
+            </article>
+          </div>
+
+          <!-- ===== OnlineVoting ===== -->
+          <div class="carousel-slide" role="group" aria-roledescription="slide" aria-label="Project 7 of 7">
+            <article class="project-card">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#0EA5E9" class="w-8 h-8 mb-4 shrink-0" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+              </svg>
+              <h3 class="font-heading text-xl font-bold text-[#F1F5F9]">OnlineVoting</h3>
+              <p class="mt-2 text-sm text-[#CBD5E1] leading-relaxed flex-1">
+                An online polling system with one-vote-per-person constraints and
+                real-time results.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                <span class="tech-tag">Express</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">React</span>
+              </div>
+
+            </article>
+          </div>
+          </div>
+          </div>
+
+        <!-- Arrow left -->
+        <button
+          class="carousel-arrow carousel-arrow-left"
+          id="carousel-prev"
+          aria-label="Previous projects"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+
+        <!-- Arrow right -->
+        <button
+          class="carousel-arrow carousel-arrow-right"
+          id="carousel-next"
+          aria-label="Next projects"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="flex justify-center gap-2 mt-8" id="carousel-dots" role="tablist" aria-label="Project slides">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIEW ON GITHUB ===== -->
+  <div class="flex justify-center pb-12">
+    <a
+      href="https://github.com/mrgonzales-dev/BuildItRight"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-[#0EA5E9] text-white font-semibold rounded-full hover:bg-[#0284C7] transition-colors duration-200 cursor-pointer shadow-lg shadow-[#0EA5E9]/20"
+    >
+      View on GitHub
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H6a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 6 21h10.5a2.25 2.25 0 0 0 2.25-2.25V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- ===== DIVIDER ===== -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <hr class="border-0 h-px bg-[#334155]" />
+  </div>
+
+  <!-- ===== MVC ARCHITECTURE ===== -->
+  <section id="mvc" class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-[#F1F5F9]">
+          MVC Architecture
+        </h2>
+        <p class="mt-3 text-[#CBD5E1] max-w-xl mx-auto">
+          Every project follows the same pattern — it keeps code organized,
+          predictable, and easy to change. Here's how the data flows.
+        </p>
+      </div>
+
+      <div class="max-w-2xl mx-auto text-center text-sm sm:text-base text-[#CBD5E1] mb-10 leading-relaxed">
+        <strong class="text-[#F1F5F9]">Model-View-Controller</strong> is just a way of splitting your
+        code into three buckets. <strong class="text-[#F1F5F9]">Models</strong> talk to the database.
+        <strong class="text-[#F1F5F9]">Controllers</strong> handle the logic. <strong class="text-[#F1F5F9]">Views</strong>
+        (the React frontend) handle what users see. A request always travels
+        one direction, and the response flows back the same way.
+      </div>
+
+      <!-- Request flow (top row) -->
+      <div
+        class="flex items-center justify-center flex-wrap sm:flex-nowrap gap-0 py-2"
+        role="figure"
+        aria-label="MVC data flow diagram: View sends request to Controller, Controller queries Model, Model queries Database."
+      >
+        <div class="flow-node bg-[#1E3A5F] text-[#F1F5F9] border border-[#2E5A8F]">
+          <span class="node-title">View</span>
+          <span class="node-sub">(React)</span>
+        </div>
+
+        <div class="flow-arrow">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">Request</span>
+        </div>
+
+        <div class="flow-node bg-[#2D3A5C] text-[#F1F5F9] border border-[#4A5A7C]">
+          <span class="node-title">Controller</span>
+          <span class="node-sub">(logic)</span>
+        </div>
+
+        <div class="flow-arrow">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">Query</span>
+        </div>
+
+        <div class="flow-node bg-[#1A2D4A] text-[#F1F5F9] border border-[#2A4D6A]">
+          <span class="node-title">Model</span>
+          <span class="node-sub">(SQL)</span>
+        </div>
+
+        <div class="flow-arrow">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">SQL</span>
+        </div>
+
+        <div class="flow-node bg-[#0F172A] text-[#38BDF8] border border-[#334155]">
+          <span class="node-title">Database</span>
+          <span class="node-sub">(SQLite)</span>
+        </div>
+      </div>
+
+      <!-- Response flow (bottom row) -->
+      <div
+        class="flex items-center justify-center flex-wrap sm:flex-nowrap gap-0 py-2 mt-2"
+        role="figure"
+        aria-label="Response flows back: Database returns to Model, Model returns to Controller, Controller returns to View."
+      >
+        <div class="flow-node bg-[#1E3A5F] text-[#F1F5F9] border border-[#2E5A8F]">
+          <span class="node-title">View</span>
+          <span class="node-sub">(React)</span>
+        </div>
+
+        <div class="flow-arrow reverse">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">Response</span>
+        </div>
+
+        <div class="flow-node bg-[#2D3A5C] text-[#F1F5F9] border border-[#4A5A7C]">
+          <span class="node-title">Controller</span>
+          <span class="node-sub">(logic)</span>
+        </div>
+
+        <div class="flow-arrow reverse">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">Data</span>
+        </div>
+
+        <div class="flow-node bg-[#1A2D4A] text-[#F1F5F9] border border-[#2A4D6A]">
+          <span class="node-title">Model</span>
+          <span class="node-sub">(SQL)</span>
+        </div>
+
+        <div class="flow-arrow reverse">
+          <span class="arrow-line"></span>
+          <span class="arrow-label text-[#0EA5E9] font-semibold">Rows</span>
+        </div>
+
+        <div class="flow-node bg-[#0F172A] text-[#38BDF8] border border-[#334155]">
+          <span class="node-title">Database</span>
+          <span class="node-sub">(SQLite)</span>
+        </div>
+      </div>
+
+      <div class="text-center mt-8 text-sm sm:text-base text-[#CBD5E1]">
+        <strong class="text-[#F1F5F9]">Why MVC?</strong> Need to change how data is saved? Look in
+        <strong class="text-[#F1F5F9]">models/</strong>. Need to change what a button does? Look in
+        <strong class="text-[#F1F5F9]">client/src/pages/</strong>. Learn it once, use it everywhere.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DIVIDER ===== -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <hr class="border-0 h-px bg-[#334155]" />
+  </div>
+
+  <!-- ===== QUICK START ===== -->
+  <section id="quickstart" class="py-16 sm:py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold text-[#F1F5F9]">
+          Quick Start
+        </h2>
+        <p class="mt-3 text-[#CBD5E1]">
+          Get a project running in four commands.
+        </p>
+      </div>
+
+      <div class="max-w-2xl mx-auto">
+        <ol class="space-y-6">
+          <li class="flex gap-4">
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0EA5E9] text-white text-sm font-bold shrink-0 mt-0.5">1</span>
+            <div class="flex-1">
+              <p class="font-semibold text-[#F1F5F9]">Clone the repo</p>
+              <p class="text-sm text-[#CBD5E1] mb-1">Grab everything at once:</p>
+              <pre><span class="comment"># Clone the entire collection</span>
+<span class="cmd">git clone &lt;repo-url&gt;</span> BuildItRight</pre>
+            </div>
+          </li>
+
+          <li class="flex gap-4">
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0EA5E9] text-white text-sm font-bold shrink-0 mt-0.5">2</span>
+            <div class="flex-1">
+              <p class="font-semibold text-[#F1F5F9]">Pick a project</p>
+              <p class="text-sm text-[#CBD5E1] mb-1">They all share the same layout:</p>
+              <pre><span class="cmd">cd</span> BuildItRight/BasicCrudTODOApp</pre>
+            </div>
+          </li>
+
+          <li class="flex gap-4">
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0EA5E9] text-white text-sm font-bold shrink-0 mt-0.5">3</span>
+            <div class="flex-1">
+              <p class="font-semibold text-[#F1F5F9]">Install dependencies</p>
+              <p class="text-sm text-[#CBD5E1] mb-1">Backend + frontend:</p>
+              <pre><span class="cmd">npm install</span>
+<span class="cmd">npm install --prefix client</span>   <span class="comment"># skip if no client/ folder</span></pre>
+            </div>
+          </li>
+
+          <li class="flex gap-4">
+            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0EA5E9] text-white text-sm font-bold shrink-0 mt-0.5">4</span>
+            <div class="flex-1">
+              <p class="font-semibold text-[#F1F5F9]">Start everything</p>
+              <p class="text-sm text-[#CBD5E1] mb-1">One command, both servers:</p>
+              <pre><span class="cmd">npm run dev</span></pre>
+            </div>
+          </li>
+        </ol>
+
+        <p class="text-center text-[#94A3B8] text-sm mt-8 mb-10">
+          Open <strong class="text-[#F1F5F9]">http://localhost:5173</strong> and you'll see it running.
+        </p>
+
+        <!-- Command reference table -->
+        <div class="overflow-hidden rounded-xl border border-[#334155] bg-[#1E293B] shadow-sm">
+          <table class="cmd-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>npm run dev</td>
+                <td class="text-[#CBD5E1]">Starts backend + frontend together</td>
+              </tr>
+              <tr>
+                <td>npm run dev:api</td>
+                <td class="text-[#CBD5E1]">Starts only the backend</td>
+              </tr>
+              <tr>
+                <td>npm run dev:web</td>
+                <td class="text-[#CBD5E1]">Starts only the frontend</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DIVIDER ===== -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <hr class="border-0 h-px bg-[#334155]" />
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="py-12 sm:py-16 text-center">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="font-semibold text-[#0EA5E9] text-sm uppercase tracking-wider">
+        MIT License — do whatever you want. Build something cool.
+      </p>
+      <a
+        href="https://github.com/mrgonzales-dev/BuildItRight"
+        class="inline-flex items-center gap-2 mt-3 text-[#94A3B8] hover:text-[#0EA5E9] transition-colors duration-200 cursor-pointer text-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+        </svg>
+        github.com/mrgonzales-dev/BuildItRight
+      </a>
+      <p class="mt-6 font-heading text-xl font-bold text-[#F1F5F9]">
+        Happy building.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===== CAROUSEL JAVASCRIPT ===== -->
+  <script>
+    (function () {
+      'use strict';
+
+      var track = document.getElementById('carousel-track');
+      var originalSlides = Array.from(track.children);
+      var prevBtn = document.getElementById('carousel-prev');
+      var nextBtn = document.getElementById('carousel-next');
+      var dotsContainer = document.getElementById('carousel-dots');
+
+      var totalSlides = originalSlides.length; // original count (7)
+      var currentIndex = 0;
+      var autoSlideTimer = null;
+      var jumpTimeout = null;
+
+      // === Clone all slides and append them for seamless looping ===
+      originalSlides.forEach(function (slide) {
+        track.appendChild(slide.cloneNode(true));
+      });
+      // Now track has 2 * totalSlides children (originals followed by clones)
+
+      // --- Determine slides per view ---
+      function getSlidesPerView() {
+        return window.innerWidth >= 768 ? 3 : 1;
+      }
+
+      // --- Low-level transform apply (no side effects) ---
+      function setTransform(index) {
+        var spv = getSlidesPerView();
+        var offset = -(index * (100 / spv));
+        track.style.transform = 'translateX(' + offset + '%)';
+      }
+
+      // --- Go to a specific slide (index in original range 0..totalSlides-1) ---
+      function goToSlide(index) {
+        // Cancel any pending jump-back
+        if (jumpTimeout) {
+          clearTimeout(jumpTimeout);
+          jumpTimeout = null;
+        }
+        currentIndex = index;
+        setTransform(currentIndex);
+        updateDots();
+      }
+
+      // --- Navigation ---
+      function nextSlide() {
+        stopAutoSlide();
+
+        if (jumpTimeout) {
+          clearTimeout(jumpTimeout);
+          jumpTimeout = null;
+        }
+
+        if (currentIndex < totalSlides - 1) {
+          goToSlide(currentIndex + 1);
+        } else {
+          // At last original position → transition into clone set
+          goToSlide(currentIndex + 1); // currentIndex = totalSlides
+          // After the 500ms transition finishes, instantly jump back to index 0
+          jumpTimeout = setTimeout(function () {
+            track.style.transition = 'none';
+            goToSlide(0);
+            void track.offsetHeight; // force reflow
+            track.style.transition = '';
+            jumpTimeout = null;
+          }, 500);
+        }
+
+        startAutoSlide();
+      }
+
+      function prevSlide() {
+        stopAutoSlide();
+
+        if (jumpTimeout) {
+          clearTimeout(jumpTimeout);
+          jumpTimeout = null;
+        }
+
+        if (currentIndex > 0) {
+          goToSlide(currentIndex - 1);
+        } else {
+          // At first position → teleport to clone set (visually identical),
+          // then transition to the last original page
+          track.style.transition = 'none';
+          goToSlide(totalSlides); // instantly jump to clone of slide 0
+          void track.offsetHeight; // force reflow
+          track.style.transition = '';
+          // Now animate to totalSlides - 1 (last original page)
+          goToSlide(totalSlides - 1);
+        }
+
+        startAutoSlide();
+      }
+
+      // --- Dots ---
+      function buildDots() {
+        dotsContainer.innerHTML = '';
+        // One dot per original slide (totalSlides dots)
+        for (var i = 0; i < totalSlides; i++) {
+          var dot = document.createElement('button');
+          dot.className = 'carousel-dot' + (i === currentIndex ? ' active' : '');
+          dot.setAttribute('role', 'tab');
+          dot.setAttribute('aria-selected', i === currentIndex ? 'true' : 'false');
+          dot.setAttribute('aria-label', 'Go to slide group ' + (i + 1));
+          dot.setAttribute('data-index', i);
+          dot.addEventListener('click', function () {
+            if (jumpTimeout) {
+              clearTimeout(jumpTimeout);
+              jumpTimeout = null;
+            }
+            stopAutoSlide();
+            goToSlide(parseInt(this.getAttribute('data-index')));
+            startAutoSlide();
+          });
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      function updateDots() {
+        var dots = dotsContainer.children;
+        for (var i = 0; i < dots.length; i++) {
+          var isActive = i === currentIndex;
+          dots[i].classList.toggle('active', isActive);
+          dots[i].setAttribute('aria-selected', isActive ? 'true' : 'false');
+        }
+      }
+
+      // --- Auto-slide ---
+      function startAutoSlide() {
+        if (isHovering) return;
+        stopAutoSlide();
+        autoSlideTimer = setInterval(nextSlide, 5000);
+      }
+
+      function stopAutoSlide() {
+        if (autoSlideTimer) {
+          clearInterval(autoSlideTimer);
+          autoSlideTimer = null;
+        }
+      }
+
+      // --- Rebuild on resize (debounced) ---
+      var resizeTimeout = null;
+      function handleResize() {
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function () {
+          // Cancel any pending jump
+          if (jumpTimeout) {
+            clearTimeout(jumpTimeout);
+            jumpTimeout = null;
+          }
+          buildDots();
+          // Clamp to valid range
+          var maxIdx = totalSlides - 1;
+          if (currentIndex > maxIdx) {
+            goToSlide(0);
+          } else {
+            // Re-apply transform with new slidesPerView
+            goToSlide(currentIndex);
+          }
+        }, 150);
+      }
+
+      // --- Touch / swipe support ---
+      var touchStartX = 0;
+      var touchEndX = 0;
+      var isSwiping = false;
+
+      track.addEventListener('touchstart', function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+        isSwiping = true;
+        stopAutoSlide();
+      }, { passive: true });
+
+      track.addEventListener('touchend', function (e) {
+        if (!isSwiping) return;
+        isSwiping = false;
+        touchEndX = e.changedTouches[0].screenX;
+        var diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+        }
+        startAutoSlide();
+      }, { passive: true });
+
+      // --- Pause on hover ---
+      var carousel = document.getElementById('carousel');
+      var isHovering = false;
+      carousel.addEventListener('mouseenter', function () {
+        isHovering = true;
+        stopAutoSlide();
+      });
+      carousel.addEventListener('mouseleave', function () {
+        isHovering = false;
+        startAutoSlide();
+      });
+
+      // --- Button events ---
+      prevBtn.addEventListener('click', function () {
+        prevSlide();
+      });
+      nextBtn.addEventListener('click', function () {
+        nextSlide();
+      });
+
+      // --- Keyboard support ---
+      document.addEventListener('keydown', function (e) {
+        var rect = carousel.getBoundingClientRect();
+        var isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (!isVisible) return;
+
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+        }
+      });
+
+      // --- Responsive rebuild ---
+      window.addEventListener('resize', handleResize);
+
+      // --- Init ---
+      buildDots();
+      goToSlide(0);
+      startAutoSlide();
+
+      // --- prefers-reduced-motion: disable auto-slide ---
+      var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (motionQuery.matches) {
+        stopAutoSlide();
+      }
+      motionQuery.addEventListener('change', function (e) {
+        if (e.matches) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
