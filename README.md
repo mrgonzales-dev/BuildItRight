@@ -54,7 +54,7 @@ Because it's predictable. When you open a project you've never seen before:
 - Need to change what happens when someone visits a URL? Look in **controllers/**.
 - Need to change what a button does? Look in **client/src/pages/**.
 
-Every project here follows the exact same layout. Learn the pattern once, and you can walk into any of the seven projects and know exactly where to find things. That's the whole point — **spend your time learning, not hunting**.
+Every project here follows the exact same layout. Learn the pattern once, and you can walk into any of the eight projects and know exactly where to find things. That's the whole point — **spend your time learning, not hunting**.
 
 ---
 
@@ -69,6 +69,7 @@ Every project here follows the exact same layout. Learn the pattern once, and yo
 | **ECommerce** | A single-owner e-commerce storefront with products, cart, and orders — separate owner/customer views. | You want something portfolio-ready with multiple user roles. |
 | **LibrarySystem** | Library management with books, members, borrow/return, and overdue tracking. | You want to see related database tables working together in a transactional system. |
 | **OnlineVoting** | An online polling system with one-vote-per-person constraints and real-time results. | You're interested in multi-user systems with audit trails. |
+| **MovieReviewSite** | Browse 15 classic films, rate them, and write reviews — built with Vue 3 instead of React. | You want to see how Vue 3 connects to an Express backend with the same MVC pattern. |
 
 ---
 
