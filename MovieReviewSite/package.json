@@ -1,0 +1,23 @@
+{
+  "name": "moviereviewsite",
+  "version": "1.0.0",
+  "description": "Movie review site — Express + SQLite + Vue 3",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently -n api,web -c blue,green \"nodemon server.js\" \"npm run dev --prefix client\"",
+    "dev:api": "nodemon server.js",
+    "dev:web": "npm run dev --prefix client"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "better-sqlite3": "^11.8.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.0",
+    "nodemon": "^3.1.0"
+  }
+}

@@ -1,0 +1,615 @@
+/* =========================================================================
+   MovieReviewSite — Elevated Dark Theme & Design System
+   ========================================================================= */
+
+:root {
+  /* ── Palette ──────────────────────────────────────────────────────────── */
+  --bg-primary: #08080f;
+  --bg-card: #141828;
+  --bg-input: #1a1a2e;
+  --bg-hover: #1c2237;
+
+  --star-fill: #ffd700;
+  --star-empty: #2a2a42;
+
+  --accent: #60a5fa;
+  --accent-glow: rgba(96, 165, 250, 0.25);
+
+  --border-color: #25253a;
+  --border-light: rgba(255, 255, 255, 0.06);
+
+  --text-primary: #e8edf4;
+  --text-secondary: #8b94a7;
+  --text-muted: #5c6378;
+
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+
+  /* ── Spacing Scale ────────────────────────────────────────────────────── */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --line-height-relaxed: 1.75;
+  --line-height-normal: 1.6;
+  --line-height-tight: 1.25;
+
+  /* ── Radii ────────────────────────────────────────────────────────────── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-continuous: 16px;
+
+  /* ── Shadows ──────────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.55);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(96, 165, 250, 0.12);
+
+  /* ── Transitions ──────────────────────────────────────────────────────── */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms var(--ease-in-out);
+  --transition-base: 250ms var(--ease-out-expo);
+  --transition-slow: 400ms var(--ease-out-expo);
+}
+
+/* -------------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: var(--line-height-normal);
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Subtle gradient on the main page area */
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(96, 165, 250, 0.06), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(96, 165, 250, 0.03), transparent 60%),
+    var(--bg-primary);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+/* -------------------------------------------------------------------------
+   Text Hierarchy
+   ------------------------------------------------------------------------- */
+h1, .h1 { font-size: 2rem; font-weight: 700; line-height: var(--line-height-tight); letter-spacing: -0.02em; }
+h2, .h2 { font-size: 1.5rem; font-weight: 700; line-height: var(--line-height-tight); }
+h3, .h3 { font-size: 1.25rem; font-weight: 600; line-height: var(--line-height-tight); }
+h4, .h4 { font-size: 1.1rem; font-weight: 600; }
+h5, .h5 { font-size: 1rem; font-weight: 600; }
+
+.text-body {
+  color: var(--text-primary);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-caption {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.text-overline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* -------------------------------------------------------------------------
+   Form overrides (Bootstrap dark — elevated)
+   ------------------------------------------------------------------------- */
+.form-control,
+.form-select {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.95rem;
+  line-height: var(--line-height-normal);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bg-input);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+}
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.invalid-feedback {
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.form-control.is-invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* -------------------------------------------------------------------------
+   Cards
+   ------------------------------------------------------------------------- */
+.card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.card.form-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* -------------------------------------------------------------------------
+   Alerts
+   ------------------------------------------------------------------------- */
+.alert {
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+}
+
+.alert-info {
+  background-color: rgba(96, 165, 250, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  color: var(--accent);
+}
+
+.alert-info a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.alert-success {
+  background-color: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: var(--success);
+}
+
+.alert-danger {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--danger);
+}
+
+/* -------------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------------- */
+.btn {
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.125rem;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #76b5fb;
+  border-color: #76b5fb;
+  color: var(--bg-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: scale(0.97) translateY(0);
+}
+
+.btn-primary:disabled {
+  background-color: #2e4870;
+  border-color: #2e4870;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-outline-info {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline-info:hover {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-outline-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--danger);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.btn-outline-secondary {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* -------------------------------------------------------------------------
+   Tables
+   ------------------------------------------------------------------------- */
+.table-dark {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.025);
+  --bs-table-border-color: var(--border-color);
+  --bs-table-color: var(--text-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------------------------
+   Navbar tweaks (global — per-component styles in NavBar.vue)
+   ------------------------------------------------------------------------- */
+.navbar {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar .nav-link {
+  color: var(--text-secondary) !important;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-link:hover {
+  color: var(--accent) !important;
+}
+
+/* -------------------------------------------------------------------------
+   Genre badge & color classes
+   ------------------------------------------------------------------------- */
+
+/* Base genre badge */
+.badge.genre-badge {
+  font-weight: 500;
+  font-size: 0.78rem;
+  padding: 0.25em 0.65em;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* Genre-specific colors */
+.genre-drama .badge.genre-badge,
+.badge.genre-drama {
+  background-color: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+.genre-action .badge.genre-badge,
+.badge.genre-action {
+  background-color: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.genre-scifi .badge.genre-badge,
+.badge.genre-scifi {
+  background-color: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.genre-crime .badge.genre-badge,
+.badge.genre-crime {
+  background-color: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.genre-thriller .badge.genre-badge,
+.badge.genre-thriller {
+  background-color: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.genre-war .badge.genre-badge,
+.badge.genre-war {
+  background-color: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+}
+
+.genre-comedy .badge.genre-badge,
+.badge.genre-comedy {
+  background-color: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.genre-horror .badge.genre-badge,
+.badge.genre-horror {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.genre-romance .badge.genre-badge,
+.badge.genre-romance {
+  background-color: rgba(244, 114, 182, 0.15);
+  color: #f472b6;
+}
+
+/* Default / General genre */
+.badge.genre-default {
+  background-color: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+/* -------------------------------------------------------------------------
+   Genre-based poster gradients
+   ------------------------------------------------------------------------- */
+
+/* Drama — deep blue/violet */
+.poster-drama {
+  background:
+    linear-gradient(160deg, #0f1a3a 0%, #162452 40%, #1a2d5e 70%, #0f1a40 100%);
+  position: relative;
+}
+
+/* Action — rich red/crimson */
+.poster-action {
+  background:
+    linear-gradient(160deg, #2d0f0f 0%, #4a1118 40%, #5c1a24 70%, #2d0f15 100%);
+  position: relative;
+}
+
+/* Sci-Fi — purple/violet */
+.poster-scifi {
+  background:
+    linear-gradient(160deg, #1a0f2d 0%, #2d1652 40%, #3a1a6e 70%, #1a0f3d 100%);
+  position: relative;
+}
+
+/* Crime — amber/gold */
+.poster-crime {
+  background:
+    linear-gradient(160deg, #2d1f0f 0%, #4a3018 40%, #5c3d1a 70%, #2d1f10 100%);
+  position: relative;
+}
+
+/* Thriller — teal/green-dark */
+.poster-thriller {
+  background:
+    linear-gradient(160deg, #0f2d1a 0%, #164a2a 40%, #1a5c36 70%, #0f2d1c 100%);
+  position: relative;
+}
+
+/* War — burnt orange/rust */
+.poster-war {
+  background:
+    linear-gradient(160deg, #2d1a0f 0%, #4a2518 40%, #5c321a 70%, #2d1a10 100%);
+  position: relative;
+}
+
+/* Comedy — warm yellow/gold */
+.poster-comedy {
+  background:
+    linear-gradient(160deg, #2d280f 0%, #4a4016 40%, #5c501a 70%, #2d2810 100%);
+  position: relative;
+}
+
+/* Horror — dark crimson */
+.poster-horror {
+  background:
+    linear-gradient(160deg, #1a0f0f 0%, #3a1118 40%, #4a1520 70%, #1a0f12 100%);
+  position: relative;
+}
+
+/* Romance — rose/pink */
+.poster-romance {
+  background:
+    linear-gradient(160deg, #2d0f1a 0%, #4a1835 40%, #5c1a45 70%, #2d0f20 100%);
+  position: relative;
+}
+
+/* Default poster gradient */
+.poster-default {
+  background:
+    linear-gradient(160deg, #0f0f2d 0%, #16204a 40%, #1a2a5c 70%, #0f0f30 100%);
+  position: relative;
+}
+
+/* Film strip overlay — subtle repeating pattern on all poster placeholders */
+[class^="poster-"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 6px,
+      rgba(255, 255, 255, 0.02) 6px,
+      rgba(255, 255, 255, 0.02) 7px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle noise/film-grain effect on posters */
+[class^="poster-"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* Poster initials sit above the overlays */
+[class^="poster-"] > .poster-initials {
+  position: relative;
+  z-index: 2;
+}
+
+/* -------------------------------------------------------------------------
+   Responsive utilities
+   ------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  :root {
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+  }
+
+  h1, .h1 { font-size: 1.6rem; }
+  h2, .h2 { font-size: 1.35rem; }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1, .h1 { font-size: 1.4rem; }
+}
+
+/* -------------------------------------------------------------------------
+   Entrance animation keyframes (used via Vue transition / manual)
+   ------------------------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility class for staggered card entrance (used in Home.vue) */
+.animate-card-entrance {
+  animation: fadeInUp var(--transition-slow) var(--ease-out-expo) both;
+}
+
+/* Staggered delays — applied by JS or template loop */
+.animate-card-entrance:nth-child(1)  { animation-delay: 0.04s; }
+.animate-card-entrance:nth-child(2)  { animation-delay: 0.08s; }
+.animate-card-entrance:nth-child(3)  { animation-delay: 0.12s; }
+.animate-card-entrance:nth-child(4)  { animation-delay: 0.16s; }
+.animate-card-entrance:nth-child(5)  { animation-delay: 0.20s; }
+.animate-card-entrance:nth-child(6)  { animation-delay: 0.24s; }
+.animate-card-entrance:nth-child(7)  { animation-delay: 0.28s; }
+.animate-card-entrance:nth-child(8)  { animation-delay: 0.32s; }
+.animate-card-entrance:nth-child(9)  { animation-delay: 0.36s; }
+.animate-card-entrance:nth-child(10) { animation-delay: 0.40s; }
+.animate-card-entrance:nth-child(11) { animation-delay: 0.44s; }
+.animate-card-entrance:nth-child(12) { animation-delay: 0.48s; }
+
+/* Page entrance */
+.animate-page-enter {
+  animation: fadeIn var(--transition-slow) var(--ease-out-expo) both;
+}
+
+/* -------------------------------------------------------------------------
+   Scrollbar styling
+   ------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
